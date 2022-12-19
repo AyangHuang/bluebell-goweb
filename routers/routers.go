@@ -19,9 +19,11 @@ func Setup(mode string) *gin.Engine {
 	}
 	e := gin.New()
 
-	e.Use(logger.GinLogger(), logger.GinRecovery(true))
+	v1 := e.Group("/api/v1")
 
-	e.GET("/hello", func(context *gin.Context) {
+	v1.Use(logger.GinLogger(), logger.GinRecovery(true))
+
+	v1.GET("/hello", func(context *gin.Context) {
 		context.String(http.StatusOK, "hello, gin")
 	})
 	return e
