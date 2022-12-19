@@ -14,9 +14,14 @@ type AccessPayload struct {
 }
 
 var (
-	secret     = []byte(settings.Conf.TokenConfig.Secret)
-	accessHour = settings.Conf.TokenConfig.AccessHour
+	secret     []byte
+	accessHour int
 )
+
+func Init() {
+	secret = []byte(settings.Conf.TokenConfig.Secret)
+	accessHour = settings.Conf.TokenConfig.AccessHour
+}
 
 // GetAccessToken 返回一个 accessToken
 func GetAccessToken(userID int64, username string) (string, error) {
