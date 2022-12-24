@@ -21,7 +21,7 @@ func JWTMiddleWare() gin.HandlerFunc {
 			return
 		}
 		// 按空格分割
-		parts := strings.SplitN(authHeader, " ", 2)
+		parts := strings.Split(authHeader, " ")
 		if !(len(parts) == 2 && parts[0] == "Bearer") {
 			controller.ResponseError(c, controller.CodeInvalidToken)
 			c.Abort()
