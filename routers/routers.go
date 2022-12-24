@@ -24,13 +24,18 @@ func Setup(mode string) *gin.Engine {
 
 	v1.Use(logger.GinLogger(), logger.GinRecovery(true))
 	// 注册
-	v1.POST("/signup", controller.SignUpHandler)
+	v1.POST("/user/signup", controller.SignUpHandler)
 	// 登录
-	v1.POST("/login", controller.LoginHandler)
+	v1.POST("/user/login", controller.LoginHandler)
 
 	// 携带 refreshToken 请求 accessToken，即自动登录
-	v1.POST("/autologin", middlewares.JWTMiddleWare(), controller.AutoLoginHandler)
+	v1.POST("/user/autologin", middlewares.JWTMiddleWare(), controller.AutoLoginHandler)
+
 	// 后面都是需要 JWT 认证登录后才能访问的
 	v1.Use(middlewares.JWTMiddleWare())
+
+	// 发布帖子
+	v1.POST("/post/release", controller.ReleasePostHandler)
+
 	return e
 }
