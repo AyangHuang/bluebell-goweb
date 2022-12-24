@@ -1,9 +1,10 @@
 package routers
 
 import (
+	"bluebell/controller"
+	"bluebell/logger"
+	"bluebell/middlewares"
 	"github.com/gin-gonic/gin"
-	"net/http"
-	"web_app/logger"
 )
 
 func Setup(mode string) *gin.Engine {
@@ -22,9 +23,12 @@ func Setup(mode string) *gin.Engine {
 	v1 := e.Group("/api/v1")
 
 	v1.Use(logger.GinLogger(), logger.GinRecovery(true))
+	// 注册
+	v1.POST("/signup", controller.SignUpHandler)
+	// 登录
+	v1.POST("/login", controller.LoginHandler)
 
-	v1.GET("/hello", func(context *gin.Context) {
-		context.String(http.StatusOK, "hello, gin")
-	})
+	// 后面都是需要 JWT 认证登录后才能访问的
+	v1.Use(middlewares.JWTMiddleWare())
 	return e
 }

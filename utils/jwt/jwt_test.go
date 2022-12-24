@@ -10,12 +10,12 @@ func TestAccessToken(t *testing.T) {
 	//_ = settings.Init()
 	//Init()
 	secret = []byte("test")
-	accessHour = 2
-	tokenStr, _ := GetAccessToken(123, "123")
-	payload, err := ParseToken(tokenStr)
-	if err != nil {
-		log.Fatal(err)
-	} else {
-		log.Printf("userID:%d,username:%s", payload.UserID, payload.Username)
-	}
+	accessHours = 2
+	refreshHours = 3
+	ac, re, _ := GetTowToken(123, "ayang")
+	acP, _ := ParseToken(ac)
+	reP, _ := ParseToken(re)
+	log.Printf("ac :userID:%d,username:%s\nre :userID:%d,username:%s",
+		acP.UserID, acP.Username,
+		reP.UserID, reP.Username)
 }

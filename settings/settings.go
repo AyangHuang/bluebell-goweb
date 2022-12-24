@@ -15,9 +15,11 @@ type AppConfig struct {
 	Mode         string `mapstructure:"mode"`
 	Version      string `mapstructure:"version"`
 	Port         int    `mapstructure:"port"`
+	Time         string `mapstructure:"time"`
 	*LogConfig   `mapstructure:"log"`
 	*MySQLConfig `mapstructure:"mysql"`
 	*RedisConfig `mapstructure:"redis"`
+	*TokenConfig `mapstructure:"token"`
 }
 
 type LogConfig struct {
@@ -37,6 +39,12 @@ type MySQLConfig struct {
 	Port         int    `mapstructure:"port"`
 	MaxOpenConns int    `mapstructure:"max_open_conns"`
 	MaxIdleConns int    `mapstructure:"max_idle_conns"`
+}
+
+type TokenConfig struct {
+	AccessHour  int    `mapstructure:"access_hour"`
+	RefreshHour int    `mapstructure:"refresh_hour"`
+	Secret      string `mapstructure:"secret"`
 }
 
 type RedisConfig struct {

@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"bluebell/settings"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/natefinch/lumberjack"
@@ -13,7 +14,6 @@ import (
 	"runtime/debug"
 	"strings"
 	"time"
-	"web_app/settings"
 )
 
 // Init 初始化日志库

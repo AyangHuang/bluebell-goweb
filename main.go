@@ -1,6 +1,13 @@
 package main
 
 import (
+	"bluebell/dao/mysql"
+	"bluebell/dao/redis"
+	"bluebell/logger"
+	"bluebell/routers"
+	"bluebell/settings"
+	"bluebell/utils/jwt"
+	"bluebell/utils/snowflake"
 	"context"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -10,11 +17,6 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
-	"web_app/dao/mysql"
-	"web_app/dao/redis"
-	"web_app/logger"
-	"web_app/routers"
-	"web_app/settings"
 )
 
 // gin web 项目脚手架
@@ -23,6 +25,10 @@ func main() {
 	// 1. 加载配置
 	if err := settings.Init(); err != nil {
 		log.Fatalf("setting.Init err: %s", err)
+	}
+	jwt.Init()
+	if err := snowflake.Init(settings.Conf.Time, 1); err != nil {
+		log.Fatalf("snowflake.Init err：%s", err)
 	}
 
 	// 2. 初始化日志
