@@ -87,3 +87,16 @@ func LoginHandler(c *gin.Context) {
 		"refresh_token": reToken,
 	})
 }
+
+func AutoLoginHandler(c *gin.Context) {
+	// 前面已经过 jwt 中间件验证了 refreshToken 的有效性
+	// 这里直接返回一个 accessToken 即可
+	userID, _ := getCurrentUserID(c)
+	token, err := logic.GetAccessToken(userID)
+	if err != nil {
+		ResponseError(c, CodeServerBusy)
+	}
+	ResponseSuccess(c, gin.H{
+		"access_token": token,
+	})
+}

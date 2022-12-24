@@ -45,3 +45,11 @@ func Login(p *models.ParamLogin) (acToken, reToken string, err error) {
 	acToken, reToken, err = jwt.GetTowToken(user.UserID, user.Username)
 	return
 }
+
+func GetAccessToken(userID int64) (string, error) {
+	username, err := mysql.FindUserNameByUserID(userID)
+	if err != nil {
+		return "", err
+	}
+	return jwt.GetToken(userID, username, jwt.RefreshToken)
+}

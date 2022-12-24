@@ -28,6 +28,8 @@ func Setup(mode string) *gin.Engine {
 	// 登录
 	v1.POST("/login", controller.LoginHandler)
 
+	// 携带 refreshToken 请求 accessToken，即自动登录
+	v1.POST("/autologin", middlewares.JWTMiddleWare(), controller.AutoLoginHandler)
 	// 后面都是需要 JWT 认证登录后才能访问的
 	v1.Use(middlewares.JWTMiddleWare())
 	return e
