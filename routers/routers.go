@@ -37,5 +37,7 @@ func Setup(mode string) *gin.Engine {
 	// 发布帖子
 	v1.POST("/post/release", controller.ReleasePostHandler)
 
+	// 投票
+	v1.POST("/post/vote", controller.VotePostHandler)
 	return e
 }
