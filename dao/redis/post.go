@@ -7,20 +7,20 @@ import (
 )
 
 func CreatePost(postID int64) error {
+	postIDStr := strconv.FormatInt(postID, 10)
 	// 事务
 	pipeline := rdb.TxPipeline()
 	// 帖子发布时间
 	pipeline.ZAdd(getRedisKey(KeyPostTimeZSet), redis.Z{
 		Score:  float64(time.Now().Unix()),
-		Member: postID,
+		Member: postIDStr,
 	})
 
 	// 帖子投票总数
 	pipeline.ZAdd(getRedisKey(KeyPostScoreZSet), redis.Z{
 		Score:  0,
-		Member: postID,
+		Member: postIDStr,
 	})
-
 	_, err := pipeline.Exec()
 	return err
 }
@@ -58,5 +58,43 @@ func PostVote(userID int64, postID string, votes float64, direction int8) error 
 		Member: userIDStr,
 	})
 	_, err := pipeline.Exec()
+	return err
+}
+
+// GetVotes 获取按时间排序 [start, stop) 的帖子
+func GetVotes(start, stop int64, s *[]redis.Z) {
+	*s = rdb.ZRangeWithScores(getRedisKey(KeyPostTimeZSet), start, stop-1).Val()
+}
+
+// GetPostsVotes 批量获取帖子的票数
+func GetPostsVotes(postIDs *[]redis.Z, postVoteNum *[]float64) error {
+	ansCmd := make([]*redis.FloatCmd, len(*postIDs))
+
+	pipeline := rdb.Pipeline()
+	for i, postID := range *postIDs {
+		ansCmd[i] = pipeline.ZScore(getRedisKey(KeyPostScoreZSet), postID.Member.(string))
+	}
+	_, err := pipeline.Exec()
+	if err != nil {
+		return err
+	}
+
+	for i, length := 0, len(*postIDs); i < length; i++ {
+		(*postVoteNum)[i] = ansCmd[i].Val()
+	}
+	return nil
+}
+
+// DelPost 删除帖子相关的3个zset
+func DelPost(s *[]redis.Z, postIsExpired *[]bool) (err error) {
+	pipeline := rdb.TxPipeline()
+	for i, length := 0, len(*s); i < length; i++ {
+		if (*postIsExpired)[i] {
+			pipeline.ZRem(getRedisKey(KeyPostTimeZSet), (*s)[i].Member.(string))
+			pipeline.Del(getRedisKey(KeyPostVotedZSet) + (*s)[i].Member.(string))
+			pipeline.ZRem(getRedisKey(KeyPostScoreZSet), (*s)[i].Member.(string))
+		}
+	}
+	_, err = pipeline.Exec()
 	return err
 }

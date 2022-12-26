@@ -32,7 +32,7 @@ func Setup(mode string) *gin.Engine {
 	v1.POST("/user/autologin", middlewares.JWTMiddleWare(), controller.AutoLoginHandler)
 
 	// 后面都是需要 JWT 认证登录后才能访问的
-	v1.Use(middlewares.JWTMiddleWare())
+	//v1.Use(middlewares.JWTMiddleWare())
 
 	// 发布帖子
 	v1.POST("/post/release", controller.ReleasePostHandler)

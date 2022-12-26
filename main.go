@@ -4,6 +4,7 @@ import (
 	"bluebell/dao/mysql"
 	"bluebell/dao/redis"
 	"bluebell/logger"
+	"bluebell/other_serve/persist"
 	"bluebell/routers"
 	"bluebell/settings"
 	"bluebell/utils/jwt"
@@ -56,6 +57,12 @@ func main() {
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			zap.L().Fatal("listing", zap.Error(err))
 		}
+	}()
+
+	// 6.从 redis 把过了投票期的刷回 mysql
+	go func() {
+		persist.PersistVotesToDB()
+		time.Sleep(time.Hour)
 	}()
 
 	quit := make(chan os.Signal, 1)

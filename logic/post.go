@@ -76,7 +76,7 @@ func VotePost(userID int64, vote *models.ParamVoteData) (err error) {
 	votes := redis.GetPostVotes(vote.PostID)
 
 	// 3.查看过期时间与否 现在-发布 >= 7 天过期时间+投票增加或减少时间
-	if float64(time.Now().Unix())-postTime >= oneWeekInSeconds+votes*scorePerVote {
+	if JudgePostExpired(postTime, votes) {
 		zap.L().Info("post 已过期", zap.String("postID", vote.PostID))
 		return ErrorPostExpired
 	}
@@ -130,4 +130,14 @@ func VotePost(userID int64, vote *models.ParamVoteData) (err error) {
 			zap.Int8("vote direction", direction))
 	}
 	return
+}
+
+// JudgePostExpired 判断是否过期
+func JudgePostExpired(postTime, votes float64) bool {
+	return float64(time.Now().Unix())-postTime >= oneWeekInSeconds+votes*scorePerVote
+}
+
+// JudgePostOutTime 判断是否过了预定日期，不包含投票增加减少的
+func JudgePostOutTime(postTime float64) bool {
+	return float64(time.Now().Unix())-postTime >= oneWeekInSeconds
 }
