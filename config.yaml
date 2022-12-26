@@ -1,11 +1,12 @@
-name: "web_app"
+name: "bluebell"
 mode: "dev"
 port: 8080
 version: "v0.0.0"
+time: "2022-12-19"
 log:
   output: "cmd" # file or cmd
   level: "debug"
-  filename: "web_app.log"
+  filename: "bluebell.log"
   max_size: 500
   max_age: 30
   max_backups: 7
@@ -14,7 +15,7 @@ mysql:
   port: 3306
   user: "root"
   password: "123456"
-  dbname: "demo"
+  db_name: "bluebell"
   max_open_conns: 200
   max_idle_conns: 50
 redis:
@@ -23,3 +24,7 @@ redis:
   password: ""
   db: 0
   pool_size: 100
+token:
+  access_hour: 2
+  refresh_hour: 168
+  secret: "ayanghuang"
